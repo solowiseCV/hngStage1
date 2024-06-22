@@ -1,7 +1,8 @@
 # Express Server with IP Address and Greeting API
 
 This project sets up a simple Express server with an API endpoint that returns the client's IP address and a personalized greeting message.
-
+## Deployed Link
+[Click here...](https://hngstage1-ca0u.onrender.com)
 
 ## Features
 
