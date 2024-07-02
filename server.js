@@ -26,10 +26,11 @@ app.get('/api/get-location-and-weather', async (req, res, next) => {
         const clientIp = req.clientIp || '127.0.0.1'; // default to 127.0.0.1 if not found
         console.log(`Client IP: ${clientIp}`);
 
-        let city;
+        let city = null;
         try {
             // First try to get location information from ipapi using the extracted client IP
             const ipapiResponse = await axios.get(`https://ipapi.co/${clientIp}/json/`);
+            console.log('ipapi response:', ipapiResponse.data); // Log the entire response
             if (ipapiResponse.data.error) {
                 throw new Error(ipapiResponse.data.reason);
             }
@@ -38,6 +39,7 @@ app.get('/api/get-location-and-weather', async (req, res, next) => {
             console.error(`ipapi failed: ${error.message}. Trying ip-api.com...`);
             // If ipapi fails, fallback to ip-api.com
             const ipApiResponse = await axios.get(`http://ip-api.com/json/${clientIp}`);
+            console.log('ip-api response:', ipApiResponse.data); // Log the entire response
             if (ipApiResponse.data.status !== 'success') {
                 throw new Error(ipApiResponse.data.message);
             }
@@ -45,6 +47,10 @@ app.get('/api/get-location-and-weather', async (req, res, next) => {
         }
 
         console.log(`Determined city: ${city}`);
+
+        if (!city) {
+            throw new Error('City not found');
+        }
 
         // Get weather information from OpenWeatherMap
         const weatherResponse = await axios.get(`https://api.openweathermap.org/data/2.5/weather`, {
@@ -54,6 +60,8 @@ app.get('/api/get-location-and-weather', async (req, res, next) => {
                 units: 'metric',
             },
         });
+
+        console.log('OpenWeatherMap response:', weatherResponse.data); // Log the entire response
 
         const temperature = weatherResponse.data.main.temp;
 
@@ -65,6 +73,7 @@ app.get('/api/get-location-and-weather', async (req, res, next) => {
         });
 
     } catch (error) {
+        console.error('Error in /api/get-location-and-weather:', error);
         next(error);
     }
 });
