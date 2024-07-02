@@ -30,7 +30,7 @@ app.get('/api/hello', async (req, res, next) => {
             throw error;
         }
         const clientIp = req.clientIp || '127.0.0.1'; // default to 127.0.0.1 if not found
-
+console.log(clientIp)
         let city;
         try {
             // First try to get location information from ipapi using the extracted client IP
